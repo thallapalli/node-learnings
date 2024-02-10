@@ -22,7 +22,33 @@ app.set('views', './views')
 app.set('view engine', 'mustache')
 
 app.use(bodyParser.urlencoded({ extended: false }))
+app.get('/login', (req, res) => {
+  res.render('login')
+})
+app.post('/login', (req, res) => {
+  let username = req.body.username
+  let password = req.body.password
+ 
+  db.oneOrNone('SELECT userid,username,password FROM newsdb.users WHERE username=$1', [username])
+    .then((user) => {
+    
+      if (user) {
+        console.log("comparing")
+        bcrypt.compare(password, user.password, function(error, result) {
 
+          if (result) {
+            res.send("SUCCESS")
+          } else {
+            res.render('login', { message: "Invalid username or password" })
+          }
+        })
+      } else {
+        res.render('login', { message: "Invalid username or password" })
+      }
+    })
+
+
+})
 app.post('/register', (req, res) => {
 
   let username = req.body.username
