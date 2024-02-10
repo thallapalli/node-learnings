@@ -4,6 +4,15 @@ const app = express()
 const mustacheExpress = require('mustache-express')
 const bodyParser = require('body-parser')
 const PORT = 3000
+const pgp=require('pg-promise')()
+const username="postgres"
+const password="Tinku_2015"
+const host="localhost"
+const port="5432"
+const database="newsdb"
+//const connectionString = "postgres://localhost:5432/nailasgarden";
+const connectionString = `postgres://${username}:${password}@${host}:${port}/${database}`;
+const db=pgp(connectionString);
 
 // configuring your view engine
 app.engine('mustache',mustacheExpress())
@@ -17,10 +26,19 @@ app.post('/register',(req,res) => {
   let username = req.body.username
   let password = req.body.password
 
-  console.log(username)
-  console.log(password)
+  db.oneOrNone('SELECT userid FROM newsdb.users WHERE username=$1',[username])
+  .then((user)=>{
+    if(user){
+        res.render('register',{message:"User exists"})
+    }else{
+        db.none('INSERT INTO newsdb.users(username,password) VALUES($1,$2)',[username,password])
+        .then(()=>{
+            res.send('SUCCESS')
+        })
+    }
+  })
 
-  res.send("REGISTER")
+  
 
 })
 
