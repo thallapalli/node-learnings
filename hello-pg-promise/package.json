@@ -1,8 +1,8 @@
 {
-  "name": "mustache-pages",
+  "name": "hello-pg-promise",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,9 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.20.2",
-    "express": "^4.18.2",
-    "express-session": "^1.18.0",
-    "mustache-express": "^1.3.2"
+    "pg-promise": "^10.0.0"
   }
 }
