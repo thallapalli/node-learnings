@@ -33,10 +33,12 @@ const database = "newsdb"
 const connectionString = `postgres://${username}:${password}@${host}:${port}/${database}`;
 const db = pgp(connectionString);
 
-
-app.get('/users/articles',(req,res) => {
-  res.render('articles',{username: req.session.user.username})
+///
+app.get('/users/add-article',(req,res) => {
+  res.render('add-article')
 })
+
+
 
 app.post('/login',(req,res) => {
 
