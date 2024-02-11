@@ -23,6 +23,10 @@ app.use(session({
 }))
 
 app.use(bodyParser.urlencoded({extended: false}))
+app.use((req,res,next)=>{
+  res.locals.authenticated=req.session.user==null?false:true
+  next();
+})
 const username = "postgres"
 const password = "Tinku_2015"
 const host = "localhost"
