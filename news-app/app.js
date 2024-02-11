@@ -32,7 +32,11 @@ const database = "newsdb"
 //const connectionString = "postgres://localhost:5432/nailasgarden";
 const connectionString = `postgres://${username}:${password}@${host}:${port}/${database}`;
 const db = pgp(connectionString);
-
+app.get('/',(req,res) => {
+  
+  res.redirect('/login');
+  
+})
 ///users/articles/edit/1
 app.get('/users/articles/edit/:articleid',(req,res) => {
   let articleId=req.params.articleid;
@@ -41,7 +45,14 @@ app.get('/users/articles/edit/:articleid',(req,res) => {
     res.render('edit-article',article)
   })
 })
-
+app.post('/users/delete-article',(req,res) => {
+  let articleId=req.body.articleId;
+  db.none('DELETE FROM newsdb.articles WHERE articleid=$1',[articleId])
+  .then(()=>{
+    res.redirect('/users/articles')
+  })
+  
+})
 app.get('/users/add-article',(req,res) => {
   res.render('add-article',{username:req.session.user.username})
 })
