@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const pgp = require('pg-promise')()
 const session = require('express-session')
 const path=require('path')
+const checkAuthorization=require('./utils/authorization')
 const userRoutes=require('./routes/users')
 const indexRoutes=require('./routes/index')
 const PORT = 3000
@@ -31,7 +32,7 @@ const database = "newsdb"
 //const connectionString = "postgres://localhost:5432/nailasgarden";
 const connectionString = `postgres://${username}:${password}@${host}:${port}/${database}`;
 db = pgp(connectionString);
-app.use('/users',userRoutes);
+app.use('/users',checkAuthorization,userRoutes);
 app.use('/',indexRoutes);
 
 app.listen(PORT,() => {
