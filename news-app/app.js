@@ -38,6 +38,16 @@ app.get('/users/add-article',(req,res) => {
   res.render('add-article')
 })
 
+app.post('/users/add-article',(req,res) => {
+  let title=req.body.title;
+  let description=req.body.description;
+  let userId=req.session.user.userId;
+  db.none('INSERT INTO newsdb.articles(title,body,userid) VALUES($1,$2,$3)',[title,description,userId])
+  .then(()=>{
+    res.send("SUCCESS")
+  })
+})
+
 
 
 app.post('/login',(req,res) => {
@@ -57,7 +67,7 @@ app.post('/login',(req,res) => {
             req.session.user = {userId: user.userid, username: user.username}
           }
 
-          res.redirect('/users/articles')
+          res.redirect('/users/add-article')
 
         } else {
             res.render('login',{message: "Invalid username or password!"})
