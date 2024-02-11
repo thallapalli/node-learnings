@@ -2,6 +2,7 @@ const express=require('express')
 const bcrypt = require('bcrypt')
 const router=express.Router()
 const SALT_ROUNDS = 10
+/*
 router.get('/',(req,res) => {
   
     db.any('SELECT articleid,title,body FROM newsdb.articles')
@@ -10,13 +11,21 @@ router.get('/',(req,res) => {
     })
      
    })
-   router.post('/login',(req,res) => {
+   */
+
+   router.get('/',async (req,res) => {
+  
+    let articles=await db.any('SELECT articleid,title,body FROM newsdb.articles')
+    res.render('index',{articles})
+   
+   })
+   router.post('/login',async (req,res) => {
    
      let username = req.body.username
      let password = req.body.password
    
-     db.oneOrNone('SELECT userid,username,password FROM newsdb.users WHERE username = $1',[username])
-     .then((user) => {
+     let user=await db.oneOrNone('SELECT userid,username,password FROM newsdb.users WHERE username = $1',[username])
+     
          if(user) { // check for user's password
    
          bcrypt.compare(password,user.password,function(error,result){
@@ -37,7 +46,7 @@ router.get('/',(req,res) => {
        } else { // user does not exist
          res.render('login',{message: "Invalid username or password!"})
        }
-     })
+    
    
    })
    
@@ -45,13 +54,13 @@ router.get('/',(req,res) => {
      res.render('login')
    })
    
-   router.post('/register',(req,res) => {
+   router.post('/register',async (req,res) => {
    
      let username = req.body.username
      let password = req.body.password
    
-     db.oneOrNone('SELECT userid FROM newsdb.users WHERE username = $1',[username])
-     .then((user) => {
+     let user=await db.oneOrNone('SELECT userid FROM newsdb.users WHERE username = $1',[username])
+     
        if(user) {
          res.render('register',{message: "User name already exists!"})
        } else {
@@ -69,7 +78,7 @@ router.get('/',(req,res) => {
          })
    
        }
-     })
+    
    
    })
    
