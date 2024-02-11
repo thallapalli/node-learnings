@@ -34,8 +34,19 @@ const connectionString = `postgres://${username}:${password}@${host}:${port}/${d
 const db = pgp(connectionString);
 
 ///
+
+
 app.get('/users/add-article',(req,res) => {
-  res.render('add-article')
+  res.render('add-article',{username:req.session.user.username})
+})
+app.get('/users/articles',(req,res) => {
+  let userId=req.session.user.userId;
+  db.any('SELECT articleid,title,body FROM newsdb.articles WHERE userid=$1',[userId])
+  .then((articles)=>{
+    res.render('articles',{articles:articles})
+  })
+
+ 
 })
 
 app.post('/users/add-article',(req,res) => {
