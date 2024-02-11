@@ -33,14 +33,21 @@ const database = "newsdb"
 const connectionString = `postgres://${username}:${password}@${host}:${port}/${database}`;
 const db = pgp(connectionString);
 
-///
-
+///users/articles/edit/1
+app.get('/users/articles/edit/:articleid',(req,res) => {
+  let articleId=req.params.articleid;
+  db.one('SELECT articleid,title,body FROM newsdb.articles WHERE articleid=$1',[articleId])
+  .then((article)=>{
+    res.render('edit-article',article)
+  })
+})
 
 app.get('/users/add-article',(req,res) => {
   res.render('add-article',{username:req.session.user.username})
 })
 app.get('/users/articles',(req,res) => {
-  let userId=req.session.user.userId;
+  //let userId=req.session.user.userId;
+  let userId=5;
   db.any('SELECT articleid,title,body FROM newsdb.articles WHERE userid=$1',[userId])
   .then((articles)=>{
     res.render('articles',{articles:articles})
@@ -48,7 +55,15 @@ app.get('/users/articles',(req,res) => {
 
  
 })
-
+app.post('/users/update-article',(req,res) => {
+  let title=req.body.title;
+  let description=req.body.description;
+  let articleid=req.body.articleId;
+  db.none('UPDATE newsdb.articles SET title=$1,body=$2 WHERE articleid=$3',[title,description,articleid])
+  .then(()=>{
+    res.redirect("/users/articles")
+  })
+})
 app.post('/users/add-article',(req,res) => {
   let title=req.body.title;
   let description=req.body.description;
