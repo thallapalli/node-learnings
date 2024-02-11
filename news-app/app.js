@@ -34,7 +34,10 @@ const connectionString = `postgres://${username}:${password}@${host}:${port}/${d
 const db = pgp(connectionString);
 app.get('/',(req,res) => {
   
-  res.redirect('/login');
+ db.any('SELECT articleid,title,body FROM newsdb.articles')
+ .then((articles)=>{
+  res.render('index',{articles})
+ })
   
 })
 ///users/articles/edit/1
@@ -57,8 +60,8 @@ app.get('/users/add-article',(req,res) => {
   res.render('add-article',{username:req.session.user.username})
 })
 app.get('/users/articles',(req,res) => {
-  //let userId=req.session.user.userId;
-  let userId=5;
+  let userId=req.session.user.userId;
+  //let userId=5;
   db.any('SELECT articleid,title,body FROM newsdb.articles WHERE userid=$1',[userId])
   .then((articles)=>{
     res.render('articles',{articles:articles})
@@ -127,7 +130,7 @@ app.post('/register',(req,res) => {
   let username = req.body.username
   let password = req.body.password
 
-  db.oneOrNone('SELECT userid FROM users WHERE username = $1',[username])
+  db.oneOrNone('SELECT userid FROM newsdb.users WHERE username = $1',[username])
   .then((user) => {
     if(user) {
       res.render('register',{message: "User name already exists!"})
@@ -137,7 +140,7 @@ app.post('/register',(req,res) => {
       bcrypt.hash(password,SALT_ROUNDS,function(error, hash){
 
         if(error == null) {
-          db.none('INSERT INTO users(username,password) VALUES($1,$2)',[username,hash])
+          db.none('INSERT INTO newsdb.users(username,password) VALUES($1,$2)',[username,hash])
           .then(() => {
             res.send('SUCCESS')
           })
